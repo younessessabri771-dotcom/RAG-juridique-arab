@@ -1,0 +1,58 @@
+@startuml
+actor User
+participant "Frontend UI" as UI
+participant "FastAPI Backend" as Backend
+participant "PostgreSQL" as DB
+participant "Gemini LLM\n(Call 1: Decomposition)" as Gemini1
+participant "Embedder\n(BAAI/bge-m3)" as Embedder
+participant "Vector Store\n(ChromaDB)" as Chroma
+participant "Reranker\n(BGE-Reranker)" as Reranker
+participant "Gemini LLM\n(Call 2: Generation)" as Gemini2
+
+User -> UI : Asks legal question
+UI -> Backend : POST /chats/{id}/messages
+activate Backend
+
+== Phase 1: Conversational Memory ==
+Backend -> DB : Fetch last 6 messages
+DB --> Backend : Chat History
+
+== Phase 2: Query Decomposition ==
+Backend -> Gemini1 : rewrite_query_async(History, Raw Query)
+activate Gemini1
+Gemini1 --> Backend : JSON Array of optimized Sub-Queries
+deactivate Gemini1
+
+== Phase 3: Multi-Query Retrieval Loop ==
+loop For each Sub-Query
+    Backend -> Embedder : embed_query(Sub-Query)
+    activate Embedder
+    Embedder --> Backend : query_vector
+    deactivate Embedder
+
+    Backend -> Chroma : search(query_vector, top_k=7)
+    activate Chroma
+    Chroma --> Backend : 7 Broad chunks
+    deactivate Chroma
+
+    Backend -> Reranker : rerank(Sub-Query, 7_chunks, top_k=3)
+    activate Reranker
+    Reranker --> Backend : Top 3 relevant chunks
+    deactivate Reranker
+end
+
+== Phase 4: Deduplication & Context Assembly ==
+Backend -> Backend : Merge & Deduplicate all chunk arrays\n(Preserve all unique context)
+
+== Phase 5: Final Answer with Fallback ==
+Backend -> Gemini2 : generate_content(Context, History, Original Query)
+activate Gemini2
+Gemini2 --> Backend : Final Answer (with optional Disclaimer)
+deactivate Gemini2
+
+Backend -> DB : Save messages
+Backend --> UI : AI Message JSON
+deactivate Backend
+
+UI --> User : Displays AI Answer
+@enduml
