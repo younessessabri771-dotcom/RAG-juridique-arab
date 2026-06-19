@@ -3,7 +3,7 @@
 ## Architecture cible
 
 ```
-Supabase (PostgreSQL)
+Neon (PostgreSQL)
         ↓
 Backend FastAPI  ──→  Docker  ──→  Render
         ↑
@@ -12,13 +12,13 @@ Frontend React  ──→  Vercel
 
 ---
 
-## Étape 1 — Supabase (Base de données) ✅
+## Étape 1 — Neon (Base de données) ✅
 
 > Base PostgreSQL déjà configurée.
 
-- URL : `db.tysszzvnoyxrgrrxvmnj.supabase.co`
+- URL : `ep-sweet-recipe-asu3wmyy.c-4.eu-central-1.aws.neon.tech`
 - Connexion via `DATABASE_URL` dans le fichier `.env`
-- Vérifier les tables : **Supabase Dashboard → Table Editor**
+- Vérifier les tables : **Neon Console → Tables**
 
 ---
 
@@ -82,7 +82,7 @@ Ajouter dans **Environment → Environment Variables** :
 
 | Clé | Valeur |
 |-----|--------|
-| `DATABASE_URL` | URL Supabase complète |
+| `DATABASE_URL` | URL Neon complète |
 | `CLERK_PUBLISHABLE_KEY` | Clé Clerk |
 | `CLERK_SECRET_KEY` | Secret Clerk |
 | `CLERK_ISSUER` | URL Clerk issuer |
@@ -129,13 +129,13 @@ Ajouter dans **Environment → Environment Variables** :
 | Frontend | `https://votre-app.vercel.app` |
 | Backend API | `https://chatbot-api.onrender.com` |
 | API Docs | `https://chatbot-api.onrender.com/docs` |
-| Database | Supabase Dashboard |
+| Database | Neon Console |
 
 ---
 
 ## État actuel
 
-- [x] Étape 1 — Supabase configuré
+- [x] Étape 1 — Neon configuré
 - [x] Étape 2 — Fichiers Docker créés
 - [ ] Étape 3 — Déploiement Render (backend)
 - [ ] Étape 4 — Déploiement Vercel (frontend)
